@@ -17,6 +17,7 @@ if __name__ == '__main__':
 功能列表：                                                                                
  1.预约商品
  2.秒杀抢购商品
+ 3.login
     """
     print(a)
 
@@ -26,6 +27,8 @@ if __name__ == '__main__':
         jd_seckill.reserve()
     elif choice_function == '2':
         jd_seckill.seckill_by_proc_pool()
+    elif choice_function == '3':
+        jd_seckill.login_by_qrcode()
     else:
         print('没有此功能')
         sys.exit(1)
