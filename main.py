@@ -1,5 +1,6 @@
 import sys
 from jd_spider_requests import JdSeckill
+from jd_logger import logger
 
 
 if __name__ == '__main__':
@@ -15,9 +16,10 @@ if __name__ == '__main__':
     `Y888P                                                                                                                                                  
                                                
 功能列表：                                                                                
- 1.预约商品
- 2.秒杀抢购商品
- 3.login
+ 1. 预约商品
+ 2. 秒杀抢购商品
+ 3. login
+ 4. print item name and link
     """
     print(a)
 
@@ -29,6 +31,10 @@ if __name__ == '__main__':
         jd_seckill.seckill_by_proc_pool()
     elif choice_function == '3':
         jd_seckill.login_by_qrcode()
+    elif choice_function == '4':
+        logger.info('Iteam.name: {}'.format(jd_seckill.get_sku_title()))
+        link = jd_seckill.get_seckill_url()
+        logger.info('Item.link: %s', link)
     else:
         print('没有此功能')
         sys.exit(1)
