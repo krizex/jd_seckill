@@ -1,6 +1,7 @@
 import sys
 from jd_spider_requests import JdSeckill
 from jd_logger import logger
+from util import send_wechat
 
 
 if __name__ == '__main__':
@@ -20,6 +21,7 @@ if __name__ == '__main__':
  2. 秒杀抢购商品
  3. login
  4. print item name and link
+ 5. send wechat message
     """
     print(a)
 
@@ -35,6 +37,9 @@ if __name__ == '__main__':
         logger.info('Iteam.name: {}'.format(jd_seckill.get_sku_title()))
         link = jd_seckill.get_seckill_url()
         logger.info('Item.link: %s', link)
+    elif choice_function == '5':
+        logger.info('Sending message to wechat')
+        send_wechat('A test message send from script')
     else:
         print('没有此功能')
         sys.exit(1)
