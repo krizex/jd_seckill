@@ -1,4 +1,5 @@
 import sys
+from datetime import datetime
 from jd_spider_requests import JdSeckill
 from jd_logger import logger
 from util import send_wechat
@@ -38,8 +39,9 @@ if __name__ == '__main__':
         link = jd_seckill.get_seckill_url()
         logger.info('Item.link: %s', link)
     elif choice_function == '5':
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         logger.info('Sending message to wechat')
-        send_wechat('A test message send from script')
+        send_wechat('A test message send from script %s' % now)
     else:
         print('没有此功能')
         sys.exit(1)
