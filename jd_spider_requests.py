@@ -322,7 +322,20 @@ class JdSeckill(object):
         """
         抢购
         """
+        self._get_seckill_url()
         self._seckill()
+
+    def _get_seckill_url(self):
+        logger.info('用户:{}'.format(self.get_username()))
+        logger.info('商品名称:{}'.format(self.get_sku_title()))
+        self.timers.start()
+        while True:
+            try:
+                self.request_seckill_url()
+                return
+            except Exception as e:
+                logger.info('Fail to get seckill url, try later: %s', str(e))
+                wait_some_time()
 
     @check_login
     def seckill_by_proc_pool(self, work_count=5):
@@ -330,9 +343,10 @@ class JdSeckill(object):
         多进程进行抢购
         work_count：进程数量
         """
+        self._get_seckill_url()
         with ProcessPoolExecutor(work_count) as pool:
             for i in range(work_count):
-                pool.submit(self.seckill)
+                pool.submit(self._seckill)
 
     def _reserve(self):
         """
@@ -352,13 +366,11 @@ class JdSeckill(object):
         """
         while True:
             try:
-                self.request_seckill_url()
-                while True:
-                    self.request_seckill_checkout_page()
-                    self.submit_seckill_order()
+                self.request_seckill_checkout_page()
+                self.submit_seckill_order()
             except Exception as e:
                 logger.info('抢购发生异常，稍后继续执行！', e)
-            wait_some_time()
+                wait_some_time()
 
     def make_reserve(self):
         """商品预约"""
@@ -458,9 +470,6 @@ class JdSeckill(object):
 
     def request_seckill_url(self):
         """访问商品的抢购链接（用于设置cookie等"""
-        logger.info('用户:{}'.format(self.get_username()))
-        logger.info('商品名称:{}'.format(self.get_sku_title()))
-        self.timers.start()
         self.seckill_url[self.sku_id] = self.get_seckill_url()
         logger.info('访问商品的抢购连接...')
         headers = {
