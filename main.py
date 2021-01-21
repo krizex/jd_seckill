@@ -23,6 +23,7 @@ if __name__ == '__main__':
  3. login
  4. print item name and link
  5. send wechat message
+ 6. get default address
     """
     print(a)
 
@@ -42,6 +43,10 @@ if __name__ == '__main__':
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         logger.info('Sending message to wechat')
         send_wechat('A test message send from script %s' % now)
+    elif choice_function == '6':
+        jd_seckill.login_by_qrcode()
+        addr = jd_seckill._get_seckill_address()
+        print(addr)
     else:
         print('没有此功能')
         sys.exit(1)

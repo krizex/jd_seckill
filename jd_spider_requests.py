@@ -344,6 +344,7 @@ class JdSeckill(object):
         work_count：进程数量
         """
         self._get_seckill_url()
+        logger.info('Ready to go!')
         with ProcessPoolExecutor(work_count) as pool:
             for i in range(work_count):
                 pool.submit(self._seckill)
@@ -388,7 +389,6 @@ class JdSeckill(object):
         resp = self.session.get(url=url, params=payload, headers=headers)
         resp_json = parse_json(resp.text)
         reserve_url = resp_json.get('url')
-        self.timers.start()
         while True:
             try:
                 self.session.get(url='https:' + reserve_url)
@@ -440,6 +440,7 @@ class JdSeckill(object):
         这里返回第一次跳转后的页面url，作为商品的抢购链接
         :return: 商品的抢购链接
         """
+        logger.info('Getting seckill url...')
         url = 'https://itemko.jd.com/itemShowBtn'
         payload = {
             'callback': 'jQuery{}'.format(random.randint(1000000, 9999999)),
@@ -516,13 +517,36 @@ class JdSeckill(object):
         }
         resp = self.session.post(url=url, data=data, headers=headers)
 
-        resp_json = None
+        resp_json = {}
         try:
             resp_json = parse_json(resp.text)
         except Exception:
-            raise SKException('抢购失败，返回信息:{}'.format(resp.text[0: 128]))
+            # the new API won't return anything, so ignore the exception
+            pass
 
         return resp_json
+
+    def _get_seckill_address(self):
+        logger.info('Getting address information')
+        url = 'https://marathon.jd.com/seckillnew/addrService/pc/getAddressList.action'
+        headers = {
+            'User-Agent': self.user_agent,
+            'Host': 'marathon.jd.com',
+        }
+        resp = self.session.post(url=url, headers=headers)
+
+        try:
+            resp_json = resp.json()
+        except Exception:
+            raise SKException('Unable to get the address list')
+
+        # find the default address
+        for addr in resp_json:
+            if addr['defaultAddress']:
+                return addr
+
+        raise Exception('Cannot find the defeault address')
+
 
     def _get_seckill_order_data(self):
         """生成提交抢购订单所需的请求体参数
@@ -532,9 +556,9 @@ class JdSeckill(object):
         # 获取用户秒杀初始化信息
         self.seckill_init_info[self.sku_id] = self._get_seckill_init_info()
         init_info = self.seckill_init_info.get(self.sku_id)
-        default_address = init_info['addressList'][0]  # 默认地址dict
-        invoice_info = init_info.get('invoiceInfo', {})  # 默认发票信息dict, 有可能不返回
-        token = init_info['token']
+        default_address = self._get_seckill_address()
+        invoice_info = {}
+        token = init_info.get('token', '') # the token may not exists
         data = {
             'skuId': self.sku_id,
             'num': self.seckill_num,
