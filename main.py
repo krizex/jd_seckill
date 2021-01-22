@@ -32,6 +32,7 @@ if __name__ == '__main__':
     if choice_function == '1':
         jd_seckill.reserve()
     elif choice_function == '2':
+        jd_seckill.reserve()
         jd_seckill.seckill_by_proc_pool()
     elif choice_function == '3':
         jd_seckill.login_by_qrcode()

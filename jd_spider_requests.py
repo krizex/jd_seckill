@@ -353,6 +353,7 @@ class JdSeckill(object):
         """
         预约
         """
+        logger.info('Making reserve...')
         while True:
             try:
                 self.make_reserve()
