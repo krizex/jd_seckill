@@ -14,7 +14,7 @@ class Timer(object):
         # Se to today's 09:59:59.500
         now = datetime.now()
         day = now.strftime('%Y-%m-%d')
-        timestamp_str = f'{day} 09:59:59.500'
+        timestamp_str = f'{day} 11:59:59.500'
         self.buy_time = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S.%f")
         # self.buy_time = datetime.strptime(global_config.getRaw('config','buy_time'), "%Y-%m-%d %H:%M:%S.%f")
         self.buy_time_ms = int(time.mktime(self.buy_time.timetuple()) * 1000.0 + self.buy_time.microsecond / 1000)
